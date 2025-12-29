@@ -76,7 +76,7 @@ export function Header() {
 
                                 {/* Admin Dashboard Button */}
                                 <button
-                                    onClick={() => window.location.href = '/Buildyourmusicproductionstudiov/admin/'}
+                                    onClick={() => window.location.href = import.meta.env.VITE_ADMIN_URL || `${import.meta.env.BASE_URL}admin/`}
                                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/50 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-cyan-500/30 transition-all hover:shadow-lg hover:shadow-purple-500/10"
                                 >
                                     <LayoutDashboard className="w-4 h-4" />
@@ -151,7 +151,7 @@ export function Header() {
                             <div className="my-4 border-t border-slate-800/50" />
 
                             <button
-                                onClick={() => { window.location.href = '/Buildyourmusicproductionstudiov/admin/'; setIsMobileMenuOpen(false); }}
+                                onClick={() => { window.location.href = import.meta.env.VITE_ADMIN_URL || `${import.meta.env.BASE_URL}admin/`; setIsMobileMenuOpen(false); }}
                                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-purple-300 hover:text-white hover:bg-slate-700/50 transition-all font-medium"
                             >
                                 <LayoutDashboard className="w-5 h-5" />

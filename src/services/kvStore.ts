@@ -1,5 +1,5 @@
 
-const API_BASE = 'http://localhost/Buildyourmusicproductionstudiov/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api';
 
 export interface KVRecord<T> {
     key: string;
