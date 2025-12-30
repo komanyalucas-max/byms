@@ -10,7 +10,11 @@ try {
         'system_name',
         'system_logo',
         'payment_pesapal_enabled',
-        'payment_offline_enabled'
+        'payment_offline_enabled',
+        'contact_email',
+        'contact_phone',
+        'contact_whatsapp',
+        'contact_address'
     ];
 
     // Construct placeholder string (?, ?, ?)

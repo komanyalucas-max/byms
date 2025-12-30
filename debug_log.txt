@@ -623,3 +623,183 @@
     [createdAt] => 2025-12-30T07:53:14.580Z
 )
 
+2025-12-30 08:28:38 - Order Payload: Array
+(
+    [customer_name] => NIT STORE
+    [customer_email] => tanzanitehost@gmail.com
+    [customer_phone] => 0789574321
+    [customer_location] => Morogoro
+    [total_amount] => 16577.99
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_at2020
+                    [product_name] => Audio-Technica AT2020
+                    [price] => 99
+                )
+
+            [3] => Array
+                (
+                    [product_id] => prod_logic
+                    [product_name] => Logic Pro
+                    [price] => 199.99
+                )
+
+            [4] => Array
+                (
+                    [product_id] => prod_audacity
+                    [product_name] => Audacity
+                    [price] => 0
+                )
+
+        )
+
+)
+
+2025-12-30 08:28:38 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => NIT STORE
+            [email] => tanzanitehost@gmail.com
+            [phone] => 0789574321
+            [location] => Morogoro
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [categoryId] => cat_computer
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [categoryId] => cat_computer
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_at2020
+                            [categoryId] => cat_mic
+                            [name] => Audio-Technica AT2020
+                            [description] => Cardioid Condenser Microphone
+                            [category] => Microphone
+                            [price] => 99
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Cardioid Pattern
+                                    [1] => High SPL Handling
+                                )
+
+                        )
+
+                    [3] => Array
+                        (
+                            [id] => prod_logic
+                            [categoryId] => cat_daw
+                            [name] => Logic Pro
+                            [description] => Professional music production
+                            [category] => DAW Software
+                            [price] => 199.99
+                            [isFree] => 
+                            [fileSize] => 35
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Professional Tools
+                                    [1] => Massive Sound Library
+                                )
+
+                        )
+
+                    [4] => Array
+                        (
+                            [id] => prod_audacity
+                            [categoryId] => cat_daw
+                            [name] => Audacity
+                            [description] => Free, open source, cross-platform audio software
+                            [category] => DAW Software
+                            [price] => 0
+                            [isFree] => 1
+                            [fileSize] => 1
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Open Source
+                                    [1] => Multi-track recording
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => nvme-ssd
+            [capacity] => 2000
+        )
+
+    [totalStorage] => 36
+    [totalAmount] => 16577.99
+    [id] => ord_69538d36a1974
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T08:28:38.678Z
+)
+

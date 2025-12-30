@@ -5,6 +5,10 @@ export interface SystemSettings {
     system_logo: string;
     payment_pesapal_enabled: boolean;
     payment_offline_enabled: boolean;
+    contact_email?: string;
+    contact_phone?: string;
+    contact_whatsapp?: string;
+    contact_address?: string;
 }
 
 const API_Base = import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api';

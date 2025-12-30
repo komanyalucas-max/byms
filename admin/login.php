@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i data-lucide="shield" class="w-10 h-10 text-white"></i>
             </div>
             <h1 class="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                Admin Dashboard
+                Login
             </h1>
             <p className="text-slate-400">Sign in to manage your studio builder</p>
         </div>
@@ -91,14 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Sign In
                 </button>
             </form>
-
-            <div class="mt-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
-                <p class="text-xs text-cyan-300 font-semibold mb-2 text-center">Default Credentials:</p>
-                <div class="space-y-1 text-xs text-slate-300 text-center">
-                    <p><span class="text-slate-400">Email:</span> admin@gmail.com</p>
-                    <p><span class="text-slate-400">Password:</span> pass@123</p>
-                </div>
-            </div>
         </div>
     </div>
     <script>

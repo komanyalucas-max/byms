@@ -27,7 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'twilio_sid',
             'twilio_token',
             'twilio_from',
-            'admin_phone'
+            'admin_phone',
+            'contact_email',
+            'contact_phone',
+            'contact_whatsapp',
+            'contact_address'
         ];
 
         $stmt = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = ?");
@@ -209,6 +213,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">Admin Phone (For Alerts)</label>
                         <input type="text" name="admin_phone" value="<?= htmlspecialchars($settings['admin_phone'] ?? '') ?>" placeholder="+255..."
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Information -->
+        <section class="bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 md:p-8">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="phone" class="w-5 h-5 text-green-400"></i>
+                Contact Information
+            </h2>
+            <div class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Contact Email</label>
+                        <input type="email" name="contact_email" value="<?= htmlspecialchars($settings['contact_email'] ?? '') ?>" placeholder="info@example.com"
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Contact Phone</label>
+                        <input type="text" name="contact_phone" value="<?= htmlspecialchars($settings['contact_phone'] ?? '') ?>" placeholder="+255..."
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">WhatsApp Number (e.g. 2557...)</label>
+                        <input type="text" name="contact_whatsapp" value="<?= htmlspecialchars($settings['contact_whatsapp'] ?? '') ?>" placeholder="255712345678"
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                        <p class="text-xs text-slate-500 mt-1">Enter number without '+' for WhatsApp link (e.g. 255...)</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Physical Address</label>
+                        <input type="text" name="contact_address" value="<?= htmlspecialchars($settings['contact_address'] ?? '') ?>" placeholder="123 Street, City"
                             class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                     </div>
                 </div>
