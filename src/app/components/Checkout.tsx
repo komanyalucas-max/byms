@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { ArrowLeft, Package, HardDrive, MapPin, User, CreditCard, Music, Wallet } from 'lucide-react';
-import { Product, LibraryPack } from './StudioBuilder';
-import { StorageType } from './StorageSelector';
+import { Product, LibraryPack, StorageType } from '../contexts/BuilderContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CheckoutProps {
   selectedProducts: Product[];
   selectedLibraryPacks: LibraryPack[];
-  storageType: StorageType;
+  storageType: StorageType | null;
   storageCapacity: number;
   totalStorage: number;
   customerLocation: string;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
   totalAmount: number;
   onBack: () => void;
   onPaymentStart: (method: 'pesapal' | 'offline') => void;
@@ -27,12 +28,14 @@ export function Checkout({
   customerLocation,
   customerName,
   customerEmail,
+  customerPhone,
   totalAmount,
   onBack,
   onPaymentStart,
 }: CheckoutProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { settings } = useSettings();
+  const { formatPrice } = useLanguage();
 
   const systemName = settings?.system_name || 'Studio Builder';
   // Use uploaded logo or fallback icon, similar to Header
@@ -43,6 +46,14 @@ export function Checkout({
       return `${(gb * 1024).toFixed(0)} MB`;
     }
     return `${gb.toFixed(1)} GB`;
+  };
+
+  // Helper to strip HTML tags
+  const stripHtml = (html: string | undefined) => {
+    if (!html) return '';
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || '';
   };
 
   const getStorageTypeName = () => {
@@ -125,7 +136,7 @@ export function Checkout({
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-purple-500/30 transition-colors">
                       <div className="flex-1 mb-2 sm:mb-0">
                         <h4 className="text-white font-medium text-sm sm:text-base mb-1">{product.name}</h4>
-                        <p className="text-xs sm:text-sm text-slate-400 line-clamp-2">{product.description}</p>
+                        <p className="text-xs sm:text-sm text-slate-400 line-clamp-2">{stripHtml(product.description)}</p>
                       </div>
                       <div className="text-xs sm:text-sm text-purple-400 font-medium sm:ml-4">
                         {formatStorage(product.fileSize)}
@@ -146,7 +157,7 @@ export function Checkout({
                               >
                                 <div className="flex-1 mb-1 sm:mb-0">
                                   <h5 className="text-xs sm:text-sm text-white font-medium">{pack.name}</h5>
-                                  <p className="text-xs text-slate-400 line-clamp-1">{pack.description}</p>
+                                  <p className="text-xs text-slate-400 line-clamp-1">{stripHtml(pack.description)}</p>
                                 </div>
                                 <div className="text-xs text-purple-400 sm:ml-4">
                                   {formatStorage(pack.fileSize)}
@@ -205,6 +216,12 @@ export function Checkout({
                       {customerEmail}
                     </div>
                   </div>
+                  <div>
+                    <label className="block text-slate-400 text-xs sm:text-sm mb-2">Phone Number</label>
+                    <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/50 text-white font-medium text-sm sm:text-base truncate">
+                      {customerPhone}
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -253,7 +270,7 @@ export function Checkout({
                   <div className="flex justify-between items-center">
                     <span className="text-white font-medium text-sm sm:text-base">Total Amount</span>
                     <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                      ${totalAmount.toFixed(2)}
+                      {formatPrice(totalAmount)}
                     </span>
                   </div>
                   <div className="text-xs text-slate-400 text-center">

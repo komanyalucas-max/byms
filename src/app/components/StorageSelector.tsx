@@ -1,65 +1,54 @@
 import { HardDrive, Usb, Disc, Zap } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-
-export type StorageType = 'usb' | 'hdd' | 'sata-ssd' | 'nvme-ssd' | null;
+import { useBuilder, StorageType } from '../contexts/BuilderContext';
 
 interface StorageSelectorProps {
-  selectedType: StorageType;
+  selectedType: StorageType | null;
   selectedCapacity: number | null;
   onTypeChange: (type: StorageType) => void;
   onCapacityChange: (capacity: number) => void;
 }
 
-const storageTypes = [
-  {
-    id: 'usb' as StorageType,
-    name: 'USB Flash Drive',
-    icon: Usb,
-    capacities: [32, 64, 128],
-    description: 'Portable and affordable',
+const IconMap: Record<string, any> = {
+  'usb': Usb,
+  'hard-drive': HardDrive,
+  'hdd': HardDrive, // Alias
+  'disc': Disc,
+  'sata-ssd': Disc, // Alias
+  'zap': Zap,
+  'nvme-ssd': Zap // Alias
+};
+
+const StyleMap: Record<string, any> = {
+  'usb': {
     color: 'from-cyan-500 to-blue-500',
     bgColor: 'bg-cyan-50',
     borderColor: 'border-cyan-300',
     iconBg: 'bg-cyan-100',
     iconColor: 'text-cyan-600',
   },
-  {
-    id: 'hdd' as StorageType,
-    name: 'Hard Drive',
-    icon: HardDrive,
-    capacities: [256, 500, 1000, 2000],
-    description: 'Large capacity, budget-friendly',
+  'hdd': {
     color: 'from-slate-500 to-slate-600',
     bgColor: 'bg-slate-50',
     borderColor: 'border-slate-300',
     iconBg: 'bg-slate-100',
     iconColor: 'text-slate-600',
   },
-  {
-    id: 'sata-ssd' as StorageType,
-    name: 'SATA SSD',
-    icon: Disc,
-    capacities: [256, 500, 1000, 2000],
-    description: 'Fast and reliable',
+  'sata-ssd': {
     color: 'from-violet-500 to-purple-500',
     bgColor: 'bg-violet-50',
     borderColor: 'border-violet-300',
     iconBg: 'bg-violet-100',
     iconColor: 'text-violet-600',
   },
-  {
-    id: 'nvme-ssd' as StorageType,
-    name: 'NVMe SSD',
-    icon: Zap,
-    capacities: [256, 500, 1000, 2000],
-    description: 'Fastest performance',
+  'nvme-ssd': {
     color: 'from-amber-500 to-orange-500',
     bgColor: 'bg-amber-50',
     borderColor: 'border-amber-300',
     iconBg: 'bg-amber-100',
     iconColor: 'text-amber-600',
   },
-];
+};
 
 export function StorageSelector({
   selectedType,
@@ -68,7 +57,9 @@ export function StorageSelector({
   onCapacityChange,
 }: StorageSelectorProps) {
   const { t } = useLanguage();
-  const currentTypeData = storageTypes.find((t) => t.id === selectedType);
+  const { storageOptions } = useBuilder();
+
+  const currentTypeData = storageOptions.find((t) => t.id === selectedType);
 
   return (
     <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl rounded-2xl md:rounded-3xl border border-slate-700/50 overflow-hidden shadow-xl">
@@ -92,9 +83,11 @@ export function StorageSelector({
         <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
           <label className="block text-slate-300 text-xs md:text-sm font-medium">{t('storage.device')}</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-            {storageTypes.map((type) => {
-              const Icon = type.icon;
+            {storageOptions.map((type) => {
+              const Icon = IconMap[type.icon] || IconMap[type.id] || HardDrive;
+              const styles = StyleMap[type.id] || StyleMap['hdd'];
               const isSelected = selectedType === type.id;
+
               return (
                 <button
                   key={type.id}
@@ -109,7 +102,7 @@ export function StorageSelector({
                     <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
                       <div
                         className={`p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all flex-shrink-0 ${isSelected
-                          ? `bg-gradient-to-br ${type.color} shadow-lg`
+                          ? `bg-gradient-to-br ${styles.color} shadow-lg`
                           : 'bg-slate-700/50 group-hover:bg-slate-700'
                           }`}
                       >
@@ -118,7 +111,7 @@ export function StorageSelector({
                       <div className="min-w-0 flex-1">
                         <h3 className={`text-xs md:text-sm transition-colors font-medium truncate ${isSelected ? 'text-white' : 'text-slate-300'
                           }`}>
-                          {t(`storage.${type.id}`)}
+                          {type.name}
                         </h3>
                       </div>
                     </div>
@@ -132,7 +125,7 @@ export function StorageSelector({
                     {/* Visual indicator for selected */}
                     {isSelected && (
                       <div className="mt-2 md:mt-3 ml-10 md:ml-12 flex items-center gap-2">
-                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${type.color} animate-pulse`} />
+                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${styles.color} animate-pulse`} />
                         <span className="text-xs text-purple-300">Selected</span>
                       </div>
                     )}
@@ -148,12 +141,12 @@ export function StorageSelector({
           <div className="space-y-2 md:space-y-3 animate-in slide-in-from-top-2 duration-300">
             <label className="block text-slate-300 text-xs md:text-sm font-medium">{t('storage.capacity')}</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-              {currentTypeData.capacities.map((capacity) => {
-                const isSelected = selectedCapacity === capacity;
+              {currentTypeData.options.map((option) => {
+                const isSelected = selectedCapacity === option.capacity;
                 return (
                   <button
-                    key={capacity}
-                    onClick={() => onCapacityChange(capacity)}
+                    key={option.id}
+                    onClick={() => onCapacityChange(option.capacity)}
                     className={`relative w-full p-3 md:p-4 rounded-lg md:rounded-xl border-2 transition-all overflow-hidden group ${isSelected
                       ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-cyan-500/50 shadow-lg shadow-cyan-500/20'
                       : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600/50 hover:bg-slate-800/70'
@@ -162,7 +155,7 @@ export function StorageSelector({
                     <div className="text-center relative">
                       <div className={`font-semibold text-sm md:text-base transition-colors truncate ${isSelected ? 'text-white' : 'text-slate-300'
                         }`}>
-                        {capacity >= 1000 ? `${capacity / 1000} TB` : `${capacity} GB`}
+                        {option.capacity >= 1000 ? `${option.capacity / 1000} TB` : `${option.capacity} GB`}
                       </div>
                       {isSelected && (
                         <div className="mt-1 w-full h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" />

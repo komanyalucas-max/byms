@@ -1,176 +1,44 @@
 import { useState, useEffect } from 'react';
-import { Check, Package, HardDrive, ArrowRight, Sparkles, Truck, User, Mail } from 'lucide-react';
-import { Product, LibraryPack } from './StudioBuilder';
-import { StorageType } from './StorageSelector';
-import { getShippingCost } from './LocationSelection';
+import { Check, Package, HardDrive, ArrowRight, Sparkles, Truck, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useBuilder, Product, LibraryPack, StorageType } from '../contexts/BuilderContext';
+import { getShippingCost } from './LocationSelection';
 
 interface PriceCalculationProps {
   selectedProducts: Product[];
   selectedLibraryPacks: LibraryPack[];
-  storageType: StorageType;
-  storageCapacity: number;
+  storageType: StorageType | null;
+  storageCapacity: number | null;
   totalStorage: number;
   customerLocation: string;
-  onContinueToCheckout: (details: { name: string; email: string; totalAmount: number }) => void;
+  onContinueToCheckout: (details: { name: string; email: string; phone: string; totalAmount: number }) => void;
   onBack: () => void;
 }
 
-// Pricing logic
-const getProductPrice = (product: Product): number => {
-  // Free products cost $0
-  if (product.isFree) return 0;
-
-  // Simple pricing based on product ID (you can customize this)
-  const priceMap: Record<string, number> = {
-    'reaper': 60,
-    'fl-studio': 199,
-    'ableton-live': 449,
-    'logic-pro': 199,
-    'keyscape': 399,
-    'serum': 189,
-    'kontakt': 399,
-    'valhalla-vintage': 50,
-    'fabfilter-pro-q': 179,
-    'soundtoys-bundle': 499,
-    'izotope-ozone': 129,
-    'splice': 9.99,
-    'loopcloud': 14.99,
-    'output-arcade': 9.99,
-  };
-
-  return priceMap[product.id] || 99;
-};
-
-const getLibraryPackPrice = (pack: LibraryPack): number => {
-  // Library packs pricing
-  const priceMap: Record<string, number> = {
-    // Kontakt packs
-    'kontakt-yamaha': 149,
-    'kontakt-damage': 199,
-    'kontakt-guitars': 99,
-    'kontakt-strings': 299,
-    'kontakt-brass': 249,
-
-    // Vital packs
-    'vital-community-1': 0, // Free
-    'vital-bass': 29,
-    'vital-pads': 29,
-
-    // Keyscape packs
-    'keyscape-vintage': 149,
-    'keyscape-modern': 179,
-    'keyscape-hybrid': 99,
-
-    // Serum packs
-    'serum-bass': 49,
-    'serum-edm': 49,
-    'serum-fx': 39,
-    'serum-vocal': 45,
-
-    // LABS packs
-    'labs-strings': 0, // Free
-    'labs-ambient': 0, // Free
-    'labs-frozen': 0, // Free
-
-    // Valhalla packs
-    'valhalla-presets-vol1': 15,
-    'valhalla-vintage-collection': 20,
-
-    // FabFilter packs
-    'fabfilter-mixing': 29,
-    'fabfilter-mastering': 29,
-    'fabfilter-creative': 25,
-
-    // Soundtoys packs
-    'soundtoys-vintage': 39,
-    'soundtoys-modulation': 35,
-    'soundtoys-delay': 35,
-
-    // iZotope packs
-    'izotope-genre-masters': 25,
-    'izotope-loudness': 20,
-
-    // TDR packs
-    'tdr-vocal': 0, // Free
-    'tdr-drums': 0, // Free
-  };
-
-  return priceMap[pack.id] || 49;
-};
-
-const getStoragePrice = (type: StorageType, capacity: number): number => {
-  if (!type) return 0;
-
-  const prices: Record<string, Record<number, number>> = {
-    'usb': { 32: 15, 64: 25, 128: 40 },
-    'hdd': { 256: 45, 500: 60, 1000: 80, 2000: 120 },
-    'sata-ssd': { 256: 50, 500: 75, 1000: 110, 2000: 200 },
-    'nvme-ssd': { 256: 70, 500: 100, 1000: 150, 2000: 280 },
-  };
-
-  return prices[type]?.[capacity] || 0;
-};
-
 // Helper function to get product image
-const getProductImage = (productId: string): string => {
-  const imageMap: Record<string, string> = {
-    // DAWs
-    'reaper': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
-    'fl-studio': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
-    'ableton-live': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
-    'logic-pro': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
-    'garageband': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
-    'cakewalk': 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400',
+const getProductImage = (product: Product): string => {
+  if (product.image) return product.image;
 
-    // Instruments
-    'vital': 'https://images.unsplash.com/photo-1642784323419-89d08b21c4de?w=400',
-    'keyscape': 'https://images.unsplash.com/photo-1642784323419-89d08b21c4de?w=400',
-    'serum': 'https://images.unsplash.com/photo-1642784323419-89d08b21c4de?w=400',
-    'kontakt': 'https://images.unsplash.com/photo-1642784323419-89d08b21c4de?w=400',
-    'labs': 'https://images.unsplash.com/photo-1642784323419-89d08b21c4de?w=400',
-
-    // Effects
-    'valhalla-vintage': 'https://images.unsplash.com/photo-1650147880756-32cff42ac2d7?w=400',
-    'fabfilter-pro-q': 'https://images.unsplash.com/photo-1650147880756-32cff42ac2d7?w=400',
-    'soundtoys-bundle': 'https://images.unsplash.com/photo-1650147880756-32cff42ac2d7?w=400',
-    'izotope-ozone': 'https://images.unsplash.com/photo-1650147880756-32cff42ac2d7?w=400',
-    'free-effects': 'https://images.unsplash.com/photo-1650147880756-32cff42ac2d7?w=400',
-
-    // Samples
-    'splice': 'https://images.unsplash.com/photo-1631692364644-d6558eab0915?w=400',
-    'loopcloud': 'https://images.unsplash.com/photo-1631692364644-d6558eab0915?w=400',
-    'freesound': 'https://images.unsplash.com/photo-1631692364644-d6558eab0915?w=400',
-    'output-arcade': 'https://images.unsplash.com/photo-1631692364644-d6558eab0915?w=400',
-  };
-
-  return imageMap[productId] || 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400';
+  // Fallback map if needed, or just a default
+  return 'https://images.unsplash.com/photo-1758179766251-6b4a0df3c936?w=400';
 };
 
 // Helper function to get library pack image
-const getLibraryPackImage = (packId: string): string => {
-  // Use different images for different types of library packs
-  const imageMap: Record<string, string> = {
-    // Sound wave/audio visualization for most packs
-    default: 'https://images.unsplash.com/photo-1692838952665-a7a9577fde9e?w=400',
-    // Music library/studio for sound libraries
-    library: 'https://images.unsplash.com/photo-1566918230723-378f6e7878d7?w=400',
-    // Vinyl for vintage/classic packs
-    vintage: 'https://images.unsplash.com/photo-1603850121303-d4ade9e5ba65?w=400',
-    // DAW screen for preset packs
-    preset: 'https://images.unsplash.com/photo-1763336333573-e1f656aa3255?w=400',
-  };
+const getLibraryPackImage = (pack: LibraryPack): string => {
+  if (pack.image) return pack.image;
 
-  // Categorize packs by type
-  if (packId.includes('vintage') || packId.includes('classic')) {
-    return imageMap.vintage;
-  } else if (packId.includes('preset') || packId.includes('community')) {
-    return imageMap.preset;
-  } else if (packId.includes('strings') || packId.includes('brass') || packId.includes('piano') || packId.includes('guitar')) {
-    return imageMap.library;
+  // Use different images for different types of library packs based on name
+  const name = pack.name.toLowerCase();
+
+  if (name.includes('vintage') || name.includes('classic')) {
+    return 'https://images.unsplash.com/photo-1603850121303-d4ade9e5ba65?w=400';
+  } else if (name.includes('preset') || name.includes('community')) {
+    return 'https://images.unsplash.com/photo-1763336333573-e1f656aa3255?w=400';
+  } else if (name.includes('strings') || name.includes('brass') || name.includes('piano') || name.includes('guitar')) {
+    return 'https://images.unsplash.com/photo-1566918230723-378f6e7878d7?w=400';
   }
 
-  return imageMap.default;
+  return 'https://images.unsplash.com/photo-1692838952665-a7a9577fde9e?w=400';
 };
 
 export function PriceCalculation({
@@ -184,10 +52,12 @@ export function PriceCalculation({
   onBack,
 }: PriceCalculationProps) {
   const { t, formatPrice } = useLanguage();
+  const { getStoragePrice } = useBuilder();
   const [isCalculating, setIsCalculating] = useState(true);
   const [progress, setProgress] = useState(0);
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   // Convert Sets to Arrays for easier manipulation
   const selectedProducts = Array.from(selectedProductsSet || []);
@@ -210,16 +80,17 @@ export function PriceCalculation({
     }
   }, [isCalculating]);
 
-  const productsTotal = selectedProducts.reduce((sum, product) => sum + getProductPrice(product), 0);
-  const libraryPacksTotal = selectedLibraryPacks.reduce((sum, pack) => sum + getLibraryPackPrice(pack), 0);
+  const productsTotal = selectedProducts.reduce((sum, product) => sum + (product.price || 0), 0);
+  // Default library pack price since not yet fully managed
+  const libraryPacksTotal = selectedLibraryPacks.reduce((sum, _) => sum + 49, 0);
   const storagePrice = getStoragePrice(storageType, storageCapacity || 0);
   const subtotal = productsTotal + libraryPacksTotal + storagePrice;
   const shippingCost = getShippingCost(customerLocation);
   const total = subtotal + shippingCost;
 
   const handleOrderNow = () => {
-    if (!customerName.trim() || !customerEmail.trim()) {
-      alert('Please fill in your name and email to continue');
+    if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
+      alert('Please fill in your name, email, and phone number to continue');
       return;
     }
 
@@ -234,6 +105,7 @@ export function PriceCalculation({
     onContinueToCheckout({
       name: customerName,
       email: customerEmail,
+      phone: customerPhone,
       totalAmount: total
     });
   };
@@ -342,7 +214,7 @@ export function PriceCalculation({
 
             <div className="space-y-3">
               {selectedProducts.map((product) => {
-                const productImage = getProductImage(product.id);
+                const productImage = getProductImage(product); // Pass full product object
                 const hasLibraryPacks = product.libraryPacks && selectedLibraryPacks.some((pack) =>
                   product.libraryPacks!.some((p) => p.id === pack.id)
                 );
@@ -359,9 +231,7 @@ export function PriceCalculation({
                         />
                         {/* Status Badges */}
                         <div className="absolute top-0 left-0 right-0 flex flex-wrap gap-0.5 p-1">
-                          {product.isFree && (
-                            <span className="bg-emerald-500/90 text-white text-[8px] font-bold px-1 rounded shadow-sm">FREE</span>
-                          )}
+
                         </div>
                       </div>
 
@@ -441,6 +311,20 @@ export function PriceCalculation({
                       className="w-full px-3 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all"
                     />
                   </div>
+
+                  <div>
+                    <label htmlFor="customer-phone" className="block text-xs font-medium text-slate-400 mb-1">
+                      Phone Number *
+                    </label>
+                    <input
+                      id="customer-phone"
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="+255..."
+                      className="w-full px-3 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all"
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-slate-700/50">
@@ -463,7 +347,7 @@ export function PriceCalculation({
                   <span className="text-xs text-slate-300">{getStorageTypeName()}</span>
                 </div>
                 <span className="text-sm font-bold text-white">
-                  {storageCapacity >= 1000 ? `${storageCapacity / 1000} TB` : `${storageCapacity} GB`}
+                  {(storageCapacity || 0) >= 1000 ? `${(storageCapacity || 0) / 1000} TB` : `${storageCapacity || 0} GB`}
                 </span>
               </div>
 

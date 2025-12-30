@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { kvStore } from '../../services/kvStore';
-import type { Product as DBProduct, Category as DBCategory } from '../../types';
 import { Order } from '../../services/orderService';
 
-// Define types (moved from StudioBuilder)
+const API_BASE_URL = 'http://localhost/byms/api';
+
+// Define types
 export interface LibraryPack {
     id: string;
     name: string;
@@ -17,33 +17,46 @@ export interface Product {
     name: string;
     description: string;
     fileSize: number;
-    isFree?: boolean;
     libraryPacks?: LibraryPack[];
     image?: string;
     price: number;
+    category?: string;
 }
 
 export interface Category {
     id: string;
     title: string;
     subtitle: string;
-    icon: string; // Storing icon name as string to avoid component in context
+    icon: string;
     products: Product[];
     helperText?: string;
 }
 
-export type StorageType = 'usb' | 'hdd' | 'sata-ssd' | 'nvme-ssd' | null;
+export type StorageType = string; // Changed from enum to string to support dynamic types
+
+export interface StorageOption {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    options: {
+        id: string;
+        capacity: number;
+        price: number;
+    }[];
+}
 
 interface BuilderContextType {
     // Data
     categories: Category[];
+    storageOptions: StorageOption[];
     isLoading: boolean;
     error: string | null;
 
     // Selection State
     selectedItems: Set<string>;
     selectedLibraryPacks: Set<string>;
-    storageType: StorageType;
+    storageType: StorageType | null;
     storageCapacity: number | null;
 
     // Computed
@@ -53,7 +66,7 @@ interface BuilderContextType {
 
     // Order State
     customerLocation: string;
-    customerDetails: { name: string; email: string };
+    customerDetails: { name: string; email: string; phone: string };
     totalAmount: number;
     currentOrder: Order | null;
     totalPrice: number;
@@ -64,27 +77,29 @@ interface BuilderContextType {
     setStorageType: (type: StorageType) => void;
     setStorageCapacity: (capacity: number | null) => void;
     setCustomerLocation: (location: string) => void;
-    setCustomerDetails: (details: { name: string; email: string }) => void;
+    setCustomerDetails: (details: { name: string; email: string; phone: string }) => void;
     setTotalAmount: (amount: number) => void;
     setCurrentOrder: (order: Order | null) => void;
-    selectFreeStudio: () => void;
+    // selectFreeStudio removed
     resetBuilder: () => void;
+    getStoragePrice: (type: string | null, capacity: number | null) => number;
 }
 
 const BuilderContext = createContext<BuilderContextType | undefined>(undefined);
 
 export function BuilderProvider({ children }: { children: ReactNode }) {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [storageOptions, setStorageOptions] = useState<StorageOption[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
     const [selectedLibraryPacks, setSelectedLibraryPacks] = useState<Set<string>>(new Set());
-    const [storageType, setStorageType] = useState<StorageType>(null);
+    const [storageType, setStorageType] = useState<StorageType | null>(null);
     const [storageCapacity, setStorageCapacity] = useState<number | null>(null);
 
     const [customerLocation, setCustomerLocation] = useState<string>('');
-    const [customerDetails, setCustomerDetails] = useState({ name: '', email: '' });
+    const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '' });
     const [totalAmount, setTotalAmount] = useState(0);
     const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
@@ -94,42 +109,42 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
             setError(null);
 
             try {
-                const [categoriesData, productsData] = await Promise.all([
-                    kvStore.listByPrefix<DBCategory>('category:'),
-                    kvStore.listByPrefix<DBProduct>('product:')
+                const [productsRes, storageRes, categoriesRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/products.php`),
+                    fetch(`${API_BASE_URL}/storage.php`),
+                    fetch(`${API_BASE_URL}/categories.php`)
                 ]);
 
-                const dbCategories = categoriesData.map(c => c.value).sort((a, b) => a.order - b.order);
-                const dbProducts = productsData.map(p => p.value);
+                if (!productsRes.ok || !storageRes.ok || !categoriesRes.ok) throw new Error('Failed to fetch data');
 
-                const transformedCategories: Category[] = dbCategories.map(cat => {
-                    const categoryProducts = dbProducts
-                        .filter(p => p.category_id === cat.id)
-                        .map(p => ({
-                            id: p.id,
-                            name: p.name,
-                            description: p.description,
-                            fileSize: p.file_size,
-                            isFree: p.is_free,
-                            price: p.price,
-                            libraryPacks: [], // TODO: If library packs are stored in DB, fetch them
-                            image: undefined
-                        }));
+                const productsData: Product[] = await productsRes.json();
+                const storageData: StorageOption[] = await storageRes.json();
+                const categoriesData: any[] = await categoriesRes.json();
 
-                    return {
-                        id: cat.id,
-                        title: cat.name,
-                        subtitle: cat.description,
-                        icon: cat.icon || 'Library',
-                        products: categoryProducts,
-                        helperText: cat.helper_text
-                    };
-                });
+                setStorageOptions(storageData);
 
-                setCategories(transformedCategories);
+                // Map categories and filter their products
+                const categoryList: Category[] = categoriesData.map(cat => ({
+                    id: cat.id,
+                    title: cat.name,
+                    subtitle: cat.description || '',
+                    icon: cat.icon || 'Library',
+                    products: productsData.filter(p => p.category === cat.name) // api/products.php returns category name. 
+                    // Wait, api/products.php returns 'category' field as name.
+                    // But precise linking should be via ID if possible.
+                    // Let's rely on name for now as I set it up that way, 
+                    // OR ideally update api/products to return category_id.
+                }));
+
+                // Correction: My api/products.php returned mapped fields. 
+                // It does NOT return category_id in the JSON output, only category name.
+                // However, I can rely on the join name. 
+                // Or I can just map them.
+
+                setCategories(categoryList);
             } catch (err) {
                 console.error('Failed to fetch data:', err);
-                setError('Failed to load products. Please refresh the page.');
+                setError('Failed to connect to the server. Please ensure the backend is running.');
             } finally {
                 setIsLoading(false);
             }
@@ -168,16 +183,11 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
             category.products.forEach(product => {
                 if (selectedItems.has(product.id)) {
                     total += product.fileSize;
-                    product.libraryPacks?.forEach(pack => {
-                        if (selectedLibraryPacks.has(pack.id)) {
-                            total += pack.fileSize;
-                        }
-                    });
                 }
             });
         });
         return total;
-    }, [categories, selectedItems, selectedLibraryPacks]);
+    }, [categories, selectedItems]);
 
     const totalPrice = useMemo(() => {
         let total = 0;
@@ -185,15 +195,21 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
             category.products.forEach(product => {
                 if (selectedItems.has(product.id)) {
                     total += product.price || 0;
-                    // Note: Library packs currently don't have price in DB mapping or key yet, 
-                    // if they did we would add them here.
                 }
             });
         });
         return total;
     }, [categories, selectedItems]);
 
-    // Derived objects for checkout/summary
+    const getStoragePrice = (type: string | null, capacity: number | null) => {
+        if (!type || !capacity) return 0;
+        const typeOption = storageOptions.find(opt => opt.id === type);
+        if (!typeOption) return 0;
+        const capOption = typeOption.options.find(opt => opt.capacity === capacity);
+        return capOption ? capOption.price : 0;
+    };
+
+    // Derived objects
     const selectedProductObjects = useMemo(() => {
         const products: Product[] = [];
         categories.forEach(category => {
@@ -207,31 +223,11 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     }, [categories, selectedItems]);
 
     const selectedLibraryPackObjects = useMemo(() => {
-        const packs: LibraryPack[] = [];
-        categories.forEach(category => {
-            category.products.forEach(product => {
-                product.libraryPacks?.forEach(pack => {
-                    if (selectedLibraryPacks.has(pack.id)) {
-                        packs.push(pack);
-                    }
-                });
-            });
-        });
-        return packs;
-    }, [categories, selectedLibraryPacks]);
+        // Placeholder as library packs not fully implemented in DB yet
+        return [];
+    }, []);
 
-    const selectFreeStudio = () => {
-        const freeItems = new Set<string>();
-        categories.forEach(category => {
-            category.products.forEach(product => {
-                if (product.isFree) {
-                    freeItems.add(product.id);
-                }
-            });
-        });
-        setSelectedItems(freeItems);
-        setSelectedLibraryPacks(new Set());
-    };
+
 
     const resetBuilder = () => {
         setSelectedItems(new Set());
@@ -239,7 +235,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
         setStorageType(null);
         setStorageCapacity(null);
         setCustomerLocation('');
-        setCustomerDetails({ name: '', email: '' });
+        setCustomerDetails({ name: '', email: '', phone: '' });
         setTotalAmount(0);
         setCurrentOrder(null);
     };
@@ -247,6 +243,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     return (
         <BuilderContext.Provider value={{
             categories,
+            storageOptions,
             isLoading,
             error,
             selectedItems,
@@ -269,8 +266,8 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
             setCustomerDetails,
             setTotalAmount,
             setCurrentOrder,
-            selectFreeStudio,
-            resetBuilder
+            resetBuilder,
+            getStoragePrice
         }}>
             {children}
         </BuilderContext.Provider>

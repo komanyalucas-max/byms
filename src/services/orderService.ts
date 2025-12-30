@@ -1,6 +1,6 @@
 import { kvStore } from './kvStore';
 import { Product, LibraryPack } from '../app/components/StudioBuilder';
-import { StorageType } from '../app/components/StorageSelector';
+import { StorageType } from '../app/contexts/BuilderContext';
 
 export interface OrderItem {
     type: 'product' | 'library-pack';
@@ -15,6 +15,7 @@ export interface Order {
         name: string;
         location: string;
         email: string;
+        phone: string;
     };
     items: {
         products: Product[];
@@ -34,15 +35,48 @@ export interface Order {
 
 export const orderService = {
     async createOrder(order: Omit<Order, 'id' | 'createdAt' | 'status'>): Promise<Order> {
-        const id = crypto.randomUUID();
+        // Prepare payload for backend
+        const payload = {
+            customer_name: order.customer.name,
+            customer_email: order.customer.email,
+            customer_phone: order.customer.phone,
+            customer_location: order.customer.location,
+            total_amount: order.totalAmount,
+            items: [
+                ...order.items.products.map(p => ({
+                    product_id: p.id,
+                    product_name: p.name,
+                    price: p.price
+                })),
+                ...order.items.libraryPacks.map(p => ({
+                    product_id: p.id,
+                    product_name: p.name,
+                    price: 0
+                }))
+            ]
+        };
+
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api'}/orders.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create order on server');
+        }
+
+        const result = await response.json();
+
         const newOrder: Order = {
             ...order,
-            id,
+            id: result.orderId,
             status: 'pending_payment',
             createdAt: new Date().toISOString(),
         };
 
-        await kvStore.set(`order:${id}`, newOrder);
+        // Also save to local KV for fallback/history if needed
+        await kvStore.set(`order:${result.orderId}`, newOrder);
         return newOrder;
     },
 

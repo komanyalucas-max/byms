@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-300 mb-2">Price (Tsh)</label>
-                        <input type="number" step="0.01" name="price" value="<?= htmlspecialchars($product['price'] ?? 0) ?>"
+                        <input type="number" step="1" name="price" value="<?= htmlspecialchars($product['price'] ?? 0) ?>"
                             class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
                     </div>
                     <div>

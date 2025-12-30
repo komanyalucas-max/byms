@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MapPin, ArrowRight, Globe, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LocationSelectionProps {
   onLocationSelected: (location: string) => void;
@@ -47,25 +48,25 @@ const neighboringCountries = [
   'Malawi',
 ];
 
-// Shipping costs
+// Shipping costs (1 USD = 2500 TZS)
 const getShippingCostByLocation = (location: string): number => {
   // All Tanzanian regions have the same shipping cost
   if (tanzanianRegions.includes(location)) {
-    return 5; // Local shipping within Tanzania
+    return 12500; // was 5 USD
   }
-  
+
   // Neighboring countries
   const neighboringCosts: Record<string, number> = {
-    'Kenya': 15,
-    'Uganda': 20,
-    'Congo': 25,
-    'Somalia': 25,
-    'Ethiopia': 25,
-    'Rwanda': 20,
-    'Malawi': 20,
+    'Kenya': 37500, // 15 USD
+    'Uganda': 50000, // 20 USD
+    'Congo': 62500, // 25 USD
+    'Somalia': 62500, // 25 USD
+    'Ethiopia': 62500, // 25 USD
+    'Rwanda': 50000, // 20 USD
+    'Malawi': 50000, // 20 USD
   };
-  
-  return neighboringCosts[location] || 50;
+
+  return neighboringCosts[location] || 125000; // Default 50 USD fallback -> 125000
 };
 
 export function LocationSelection({ onLocationSelected, onBack }: LocationSelectionProps) {
@@ -73,6 +74,7 @@ export function LocationSelection({ onLocationSelected, onBack }: LocationSelect
   const [locationType, setLocationType] = useState<'tanzania' | 'other' | null>(null);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const { formatPrice } = useLanguage();
 
   const handleLocationTypeSelect = (type: 'tanzania' | 'other') => {
     setLocationType(type);
@@ -133,7 +135,7 @@ export function LocationSelection({ onLocationSelected, onBack }: LocationSelect
                   <p className="text-slate-400">I'm located in Tanzania</p>
                   <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30 text-sm">
                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                    Local shipping: $5
+                    Local shipping: 12,500 Tsh
                   </div>
                 </div>
                 <ArrowRight className="w-6 h-6 text-slate-400 group-hover:text-emerald-300 group-hover:translate-x-2 transition-all" />
@@ -178,8 +180,8 @@ export function LocationSelection({ onLocationSelected, onBack }: LocationSelect
   const locations = locationType === 'tanzania' ? tanzanianRegions : neighboringCountries;
   const filteredLocations = searchTerm
     ? locations.filter((location) =>
-        location.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      location.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : locations;
 
   return (
@@ -200,8 +202,8 @@ export function LocationSelection({ onLocationSelected, onBack }: LocationSelect
             {locationType === 'tanzania' ? 'Select Your Region' : 'Select Your Country'}
           </h1>
           <p className="text-slate-300">
-            {locationType === 'tanzania' 
-              ? 'Choose your region in Tanzania' 
+            {locationType === 'tanzania'
+              ? 'Choose your region in Tanzania'
               : 'Choose your country from the list'}
           </p>
         </div>
@@ -230,26 +232,24 @@ export function LocationSelection({ onLocationSelected, onBack }: LocationSelect
                   <button
                     key={location}
                     onClick={() => setSelectedLocation(location)}
-                    className={`w-full px-6 py-4 text-left transition-all ${
-                      selectedLocation === location
+                    className={`w-full px-6 py-4 text-left transition-all ${selectedLocation === location
                         ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-l-4 border-blue-500'
                         : 'hover:bg-slate-800/30'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <span
-                          className={`block ${
-                            selectedLocation === location
+                          className={`block ${selectedLocation === location
                               ? 'text-white font-medium'
                               : 'text-slate-300'
-                          }`}
+                            }`}
                         >
                           {location}
                         </span>
                         {selectedLocation === location && (
                           <span className="text-sm text-cyan-300 mt-1 block">
-                            Shipping: ${shippingCost}
+                            Shipping: {formatPrice(shippingCost)}
                           </span>
                         )}
                       </div>

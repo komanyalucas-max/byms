@@ -1,0 +1,625 @@
+2025-12-30 07:47:34 - Order Payload: Array
+(
+    [customer_name] => RENATUS NDONGEYE KAYANDA
+    [customer_email] => bernadorenatus39@gmail.com
+    [customer_phone] => 0747003357
+    [customer_location] => Dar es Salaam
+    [total_amount] => 16478.99
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_logic
+                    [product_name] => Logic Pro
+                    [price] => 199.99
+                )
+
+        )
+
+)
+
+2025-12-30 07:47:34 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => RENATUS NDONGEYE KAYANDA
+            [email] => bernadorenatus39@gmail.com
+            [phone] => 0747003357
+            [location] => Dar es Salaam
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_logic
+                            [name] => Logic Pro
+                            [description] => Professional music production
+                            [category] => DAW Software
+                            [price] => 199.99
+                            [isFree] => 
+                            [fileSize] => 35
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Professional Tools
+                                    [1] => Massive Sound Library
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => nvme-ssd
+            [capacity] => 2000
+        )
+
+    [totalStorage] => 35
+    [totalAmount] => 16478.99
+    [id] => ord_6953839618194
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T07:47:34.117Z
+)
+
+2025-12-30 07:47:38 - Order Payload: Array
+(
+    [customer_name] => RENATUS NDONGEYE KAYANDA
+    [customer_email] => bernadorenatus39@gmail.com
+    [customer_phone] => 0747003357
+    [customer_location] => Dar es Salaam
+    [total_amount] => 16478.99
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_logic
+                    [product_name] => Logic Pro
+                    [price] => 199.99
+                )
+
+        )
+
+)
+
+2025-12-30 07:47:38 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => RENATUS NDONGEYE KAYANDA
+            [email] => bernadorenatus39@gmail.com
+            [phone] => 0747003357
+            [location] => Dar es Salaam
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_logic
+                            [name] => Logic Pro
+                            [description] => Professional music production
+                            [category] => DAW Software
+                            [price] => 199.99
+                            [isFree] => 
+                            [fileSize] => 35
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Professional Tools
+                                    [1] => Massive Sound Library
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => nvme-ssd
+            [capacity] => 2000
+        )
+
+    [totalStorage] => 35
+    [totalAmount] => 16478.99
+    [id] => ord_6953839a380c8
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T07:47:38.244Z
+)
+
+2025-12-30 07:47:42 - Order Payload: Array
+(
+    [customer_name] => RENATUS NDONGEYE KAYANDA
+    [customer_email] => bernadorenatus39@gmail.com
+    [customer_phone] => 0747003357
+    [customer_location] => Dar es Salaam
+    [total_amount] => 16478.99
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_logic
+                    [product_name] => Logic Pro
+                    [price] => 199.99
+                )
+
+        )
+
+)
+
+2025-12-30 07:47:42 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => RENATUS NDONGEYE KAYANDA
+            [email] => bernadorenatus39@gmail.com
+            [phone] => 0747003357
+            [location] => Dar es Salaam
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_logic
+                            [name] => Logic Pro
+                            [description] => Professional music production
+                            [category] => DAW Software
+                            [price] => 199.99
+                            [isFree] => 
+                            [fileSize] => 35
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Professional Tools
+                                    [1] => Massive Sound Library
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => nvme-ssd
+            [capacity] => 2000
+        )
+
+    [totalStorage] => 35
+    [totalAmount] => 16478.99
+    [id] => ord_6953839e681c2
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T07:47:42.439Z
+)
+
+2025-12-30 07:47:56 - Order Payload: Array
+(
+    [customer_name] => RENATUS NDONGEYE KAYANDA
+    [customer_email] => bernadorenatus39@gmail.com
+    [customer_phone] => 0747003357
+    [customer_location] => Dar es Salaam
+    [total_amount] => 16478.99
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_logic
+                    [product_name] => Logic Pro
+                    [price] => 199.99
+                )
+
+        )
+
+)
+
+2025-12-30 07:47:56 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => RENATUS NDONGEYE KAYANDA
+            [email] => bernadorenatus39@gmail.com
+            [phone] => 0747003357
+            [location] => Dar es Salaam
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_logic
+                            [name] => Logic Pro
+                            [description] => Professional music production
+                            [category] => DAW Software
+                            [price] => 199.99
+                            [isFree] => 
+                            [fileSize] => 35
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Professional Tools
+                                    [1] => Massive Sound Library
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => nvme-ssd
+            [capacity] => 2000
+        )
+
+    [totalStorage] => 35
+    [totalAmount] => 16478.99
+    [id] => ord_695383aca80c1
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T07:47:56.712Z
+)
+
+2025-12-30 07:53:14 - Order Payload: Array
+(
+    [customer_name] => Renatus kayanda
+    [customer_email] => patrick@gmail.com
+    [customer_phone] => 0747003357
+    [customer_location] => Morogoro
+    [total_amount] => 16049
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => prod_macbook
+                    [product_name] => MacBook Pro 14"
+                    [price] => 1999
+                )
+
+            [1] => Array
+                (
+                    [product_id] => prod_win_pc
+                    [product_name] => Custom PC Build
+                    [price] => 1500
+                )
+
+            [2] => Array
+                (
+                    [product_id] => prod_audacity
+                    [product_name] => Audacity
+                    [price] => 0
+                )
+
+        )
+
+)
+
+2025-12-30 07:53:14 - Order Payload: Array
+(
+    [customer] => Array
+        (
+            [name] => Renatus kayanda
+            [email] => patrick@gmail.com
+            [phone] => 0747003357
+            [location] => Morogoro
+        )
+
+    [items] => Array
+        (
+            [products] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => prod_macbook
+                            [name] => MacBook Pro 14"
+                            [description] => <p>Apple M3 Pro chip with 18GB memory</p>
+                            [category] => Computer
+                            [price] => 1999
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => http://localhost/byms/uploads/products/img_6951c172561f4.jpg
+                            [features] => Array
+                                (
+                                    [0] => M3 Pro Chip
+                                    [1] => 18GB RAM
+                                    [2] => 512GB SSD
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => prod_win_pc
+                            [name] => Custom PC Build
+                            [description] => Intel i9, 32GB RAM, Noise-dampened case
+                            [category] => Computer
+                            [price] => 1500
+                            [isFree] => 
+                            [fileSize] => 0
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Intel i9
+                                    [1] => 32GB RAM
+                                    [2] => Quiet Operation
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => prod_audacity
+                            [name] => Audacity
+                            [description] => Free, open source, cross-platform audio software
+                            [category] => DAW Software
+                            [price] => 0
+                            [isFree] => 1
+                            [fileSize] => 1
+                            [image] => 
+                            [features] => Array
+                                (
+                                    [0] => Open Source
+                                    [1] => Multi-track recording
+                                )
+
+                        )
+
+                )
+
+            [libraryPacks] => Array
+                (
+                )
+
+        )
+
+    [storage] => Array
+        (
+            [type] => sata-ssd
+            [capacity] => 256
+        )
+
+    [totalStorage] => 1
+    [totalAmount] => 16049
+    [id] => ord_695384ea8920d
+    [status] => pending_payment
+    [createdAt] => 2025-12-30T07:53:14.580Z
+)
+

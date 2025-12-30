@@ -42,6 +42,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
         if ($row = $stmt->fetch()) $brandLogo = $row['setting_value'];
     } catch (Exception $e) { /* Ignore */
     }
+
+    // Fetch current admin profile
+    $currentAdmin = ['name' => 'Admin User', 'email' => 'admin@example.com'];
+    if (isset($_SESSION['admin_id'])) {
+        try {
+            $stmt = $pdo->prepare("SELECT name, email FROM admins WHERE id = ?");
+            $stmt->execute([$_SESSION['admin_id']]);
+            if ($row = $stmt->fetch()) {
+                $currentAdmin = $row;
+            }
+        } catch (Exception $e) { /* Ignore */
+        }
+    }
     ?>
     <!-- Mobile Header -->
     <header class="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-4">
@@ -87,6 +100,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 ['file' => 'index.php', 'label' => 'Overview', 'icon' => 'layout-dashboard'],
                 ['file' => 'products.php', 'label' => 'Products', 'icon' => 'package'],
                 ['file' => 'categories.php', 'label' => 'Categories', 'icon' => 'folder-tree'],
+                ['file' => 'storage.php', 'label' => 'Storage Managers', 'icon' => 'hard-drive'],
                 ['file' => 'orders.php', 'label' => 'Orders', 'icon' => 'shopping-cart'],
                 ['file' => 'settings.php', 'label' => 'General Settings', 'icon' => 'settings'],
             ];
@@ -110,13 +124,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <div class="p-4 border-t border-white/10 bg-slate-900/50">
-            <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 mb-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-cyan-500 flex items-center justify-center text-xs font-bold">A</div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-white truncate">Admin User</p>
-                    <p class="text-xs text-slate-400 truncate">admin@gmail.com</p>
+            <a href="profile.php" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 mb-2 hover:bg-white/10 transition-colors group">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-cyan-500 flex items-center justify-center text-xs font-bold text-white">
+                    <?= strtoupper(substr($currentAdmin['name'], 0, 1)) ?>
                 </div>
-            </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white truncate group-hover:text-cyan-300 transition-colors"><?= htmlspecialchars($currentAdmin['name']) ?></p>
+                    <p class="text-xs text-slate-400 truncate"><?= htmlspecialchars($currentAdmin['email']) ?></p>
+                </div>
+            </a>
             <a href="logout.php" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-lg transition-all text-sm font-medium">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
                 Sign Out

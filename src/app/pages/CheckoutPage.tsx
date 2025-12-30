@@ -24,7 +24,15 @@ export function CheckoutPage() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const handlePaymentStart = async (method: 'pesapal' | 'offline') => {
-        if (!customerDetails.name || !customerDetails.email) return;
+        if (!customerDetails.name || !customerDetails.email) {
+            alert('Missing customer details. Please return to the previous step.');
+            return;
+        }
+
+        if (totalAmount <= 0) {
+            alert('Invalid order total. Please verify your product selection.');
+            return;
+        }
 
         try {
             // Create Order
@@ -32,7 +40,8 @@ export function CheckoutPage() {
                 customer: {
                     name: customerDetails.name,
                     email: customerDetails.email,
-                    location: customerLocation
+                    phone: customerDetails.phone,
+                    location: customerLocation || 'Unknown' // Fallback
                 },
                 items: {
                     products: selectedProductObjects,
@@ -77,6 +86,7 @@ export function CheckoutPage() {
                 customerLocation={customerLocation}
                 customerName={customerDetails.name}
                 customerEmail={customerDetails.email}
+                customerPhone={customerDetails.phone}
                 totalAmount={totalAmount}
                 onBack={() => navigate('/summary')}
                 onPaymentStart={handlePaymentStart}

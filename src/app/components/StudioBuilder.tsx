@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, Wand2, Sliders, Library, Sparkles, Calculator, ChevronDown, Check } from 'lucide-react';
+import { Music, Wand2, Sliders, Library, ChevronDown, Check } from 'lucide-react';
 import { CostSummary } from './CostSummary';
 import { StorageSelector } from './StorageSelector';
 import { LanguageCurrencySelector } from './LanguageCurrencySelector';
@@ -24,6 +24,7 @@ export interface Product {
   isFree?: boolean;
   libraryPacks?: LibraryPack[];
   image?: string;
+  price?: number;
 }
 
 export interface Category {
@@ -63,8 +64,7 @@ export function StudioBuilder() {
     totalStorage,
     toggleItem,
     setStorageType,
-    setStorageCapacity,
-    selectFreeStudio
+    setStorageCapacity
   } = useBuilder();
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -146,13 +146,6 @@ export function StudioBuilder() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                onClick={selectFreeStudio}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-400 hover:to-purple-500 transition-all shadow-lg text-sm font-semibold flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                Free Starter
-              </button>
               <LanguageCurrencySelector />
             </div>
           </div>
@@ -182,7 +175,7 @@ export function StudioBuilder() {
                       <h2 className="text-white font-bold text-lg">{category.title}</h2>
                       <p className="text-slate-400 text-sm line-clamp-1">{stripHtml(category.subtitle)}</p>
                     </div>
-                    <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w - 5 h - 5 text - slate - 400 transition - transform flex - shrink - 0 ${isExpanded ? 'rotate-180' : ''} `} />
                   </button>
 
                   {/* Products List */}
@@ -218,11 +211,6 @@ export function StudioBuilder() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                                   <h3 className="text-white font-medium text-sm">{product.name}</h3>
-                                  {product.isFree && (
-                                    <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs rounded-full">
-                                      FREE
-                                    </span>
-                                  )}
                                 </div>
                                 <p className="text-slate-400 text-xs line-clamp-2">{stripHtml(product.description)}</p>
                               </div>
@@ -268,22 +256,7 @@ export function StudioBuilder() {
         </div>
       </div>
 
-      {/* Mobile Sticky Footer */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 z-40">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-slate-400">Total Storage</p>
-            <p className="text-lg font-bold text-white">{formatStorage(totalStorage)}</p>
-          </div>
-          <button
-            onClick={() => navigate('/location')}
-            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded-xl hover:from-purple-400 hover:to-cyan-400 transition-all shadow-lg font-semibold flex items-center gap-2"
-          >
-            <Calculator className="w-4 h-4" />
-            Calculate
-          </button>
-        </div>
-      </div>
+
     </div>
   );
 }

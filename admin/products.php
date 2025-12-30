@@ -56,7 +56,7 @@ if (isset($_POST['delete_id'])) {
                                         <?php endif; ?>
                                         <div>
                                             <div class="font-medium text-white"><?= htmlspecialchars($product['name']) ?></div>
-                                            <div class="text-sm text-slate-500 truncate mt-1 max-w-[200px]"><?= htmlspecialchars($product['description']) ?></div>
+                                            <div class="text-sm text-slate-500 truncate mt-1 max-w-[200px]"><?= htmlspecialchars(strip_tags($product['description'])) ?></div>
                                         </div>
                                     </div>
                                 </td>

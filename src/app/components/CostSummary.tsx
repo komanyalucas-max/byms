@@ -1,5 +1,5 @@
 import { Database, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { StorageType } from './StorageSelector';
+import { StorageType } from '../contexts/BuilderContext';
 import { Category } from './StudioBuilder';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -9,11 +9,12 @@ interface CostSummaryProps {
   categories: Category[];
   totalStorage?: number;
   storageCapacity: number | null;
-  storageType: StorageType;
+  storageType: StorageType | null;
   onCalculate: () => void;
 }
 
 export function CostSummary({
+  selectedItems,
   totalStorage = 0,
   storageCapacity,
   storageType,
@@ -32,6 +33,7 @@ export function CostSummary({
   const hasCapacity = storageCapacity !== null && storageType !== null;
   const isOverCapacity = hasCapacity && totalStorage > storageCapacity;
   const usagePercentage = hasCapacity ? Math.min((totalStorage / storageCapacity) * 100, 100) : 0;
+  const itemCount = selectedItems.size;
 
   return (
     <div className="relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl rounded-2xl md:rounded-3xl border border-slate-700/50 overflow-hidden shadow-xl">
@@ -46,13 +48,7 @@ export function CostSummary({
           <h2 className="text-white text-sm md:text-base font-semibold">{t('storage.summary')}</h2>
         </div>
 
-        {/* Total Storage Display */}
-        <div className="mb-4 md:mb-6 text-center p-4 md:p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl md:rounded-2xl border border-slate-700/50">
-          <div className="text-xs md:text-sm text-slate-400 mb-1 md:mb-2">{t('storage.totalNeeded')}</div>
-          <div className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-            {formatStorage(totalStorage)}
-          </div>
-        </div>
+
 
         {/* Capacity Status */}
         {hasCapacity && (
@@ -116,20 +112,18 @@ export function CostSummary({
         )}
 
         {/* Calculate Button */}
-        {totalStorage > 0 && hasCapacity && (
-          <div className="pt-3 md:pt-4 border-t border-slate-700/50">
-            <button
-              onClick={onCalculate}
-              disabled={isOverCapacity}
-              className={`w-full py-2.5 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-sm md:text-base transition-all ${isOverCapacity
-                ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:from-purple-400 hover:to-cyan-400 shadow-lg hover:shadow-xl'
-                }`}
-            >
-              {isOverCapacity ? t('storage.selectLarger') : t('storage.calculate')}
-            </button>
-          </div>
-        )}
+        <div className="pt-3 md:pt-4 border-t border-slate-700/50">
+          <button
+            onClick={onCalculate}
+            disabled={isOverCapacity || !hasCapacity || itemCount === 0}
+            className={`w-full py-2.5 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-sm md:text-base transition-all ${isOverCapacity || !hasCapacity || itemCount === 0
+              ? 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:from-purple-400 hover:to-cyan-400 shadow-lg hover:shadow-xl'
+              }`}
+          >
+            {isOverCapacity ? t('storage.selectLarger') : t('storage.calculate')}
+          </button>
+        </div>
       </div>
     </div>
   );

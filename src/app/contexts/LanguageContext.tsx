@@ -283,12 +283,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   const formatPrice = (price: number): string => {
-    if (currency === 'TZS') {
-      return `${price.toLocaleString('en-US', { maximumFractionDigits: 0 })} TZS`;
-    }
-    // Convert TZS to USD (approximately 2,500 TZS = 1 USD)
-    const usdPrice = price / 2500;
-    return `$${usdPrice.toFixed(2)}`;
+    // Always format as TZS (Tsh)
+    // Using 'en-US' locale for comma separators, but 'Tsh' suffix.
+    return `${price.toLocaleString('en-US', { maximumFractionDigits: 0 })} Tsh`;
   };
 
   return (

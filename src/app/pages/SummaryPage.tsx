@@ -24,7 +24,7 @@ export function SummaryPage() {
             totalStorage={totalStorage}
             customerLocation={customerLocation}
             onContinueToCheckout={(details) => {
-                setCustomerDetails({ name: details.name, email: details.email });
+                setCustomerDetails({ name: details.name, email: details.email, phone: details.phone });
                 setTotalAmount(details.totalAmount);
                 navigate('/checkout');
             }}

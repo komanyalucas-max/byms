@@ -14,8 +14,16 @@ if ($id) {
         $order = $stmt->fetch();
 
         if ($order) {
-            // Fetch Items
-            $stmtItems = $pdo->prepare("SELECT * FROM order_items WHERE order_id = ?");
+            // Fetch Items with Product and Category details
+            $stmtItems = $pdo->prepare("
+                SELECT oi.*, 
+                       p.name as product_name_from_db,
+                       c.name as category_name 
+                FROM order_items oi 
+                LEFT JOIN products p ON oi.product_id = p.id 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                WHERE oi.order_id = ?
+            ");
             $stmtItems->execute([$id]);
             $order_items = $stmtItems->fetchAll();
         } else {
@@ -66,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
                     <?php foreach ($order_items as $item): ?>
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
                             <div>
-                                <div class="font-medium text-white text-lg"><?= htmlspecialchars($item['product_name'] ?? 'Unknown Product') ?></div>
+                                <div class="font-medium text-white text-lg"><?= htmlspecialchars($item['product_name_from_db'] ?? $item['product_name'] ?? 'Unknown Product') ?></div>
                                 <div class="text-sm text-slate-400">Category: <?= htmlspecialchars($item['category_name'] ?? 'Unknown') ?></div>
                             </div>
                             <div class="mt-2 sm:mt-0 font-mono text-purple-300">
@@ -102,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
                     <div>
                         <span class="block text-xs text-slate-500 uppercase tracking-wider">Phone</span>
                         <span class="text-white"><?= htmlspecialchars($order['customer_phone'] ?? '-') ?></span>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-500 uppercase tracking-wider">Location</span>
+                        <span class="text-white"><?= htmlspecialchars($order['customer_location'] ?? '-') ?></span>
                     </div>
                 </div>
             </div>
