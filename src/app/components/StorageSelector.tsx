@@ -1,6 +1,7 @@
 import { HardDrive, Usb, Disc, Zap } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useBuilder, StorageType } from '../contexts/BuilderContext';
+import { StorageType } from '../../types';
+import { useBuilder } from '../contexts/BuilderContext';
 
 interface StorageSelectorProps {
   selectedType: StorageType | null;

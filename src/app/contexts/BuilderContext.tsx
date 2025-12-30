@@ -1,50 +1,8 @@
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { Order } from '../../services/orderService';
+import { Category, Product, StorageOption, StorageType, LibraryPack } from '../../types';
 
 const API_BASE_URL = 'http://localhost/byms/api';
-
-// Define types
-export interface LibraryPack {
-    id: string;
-    name: string;
-    description: string;
-    fileSize: number;
-    image?: string;
-}
-
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    fileSize: number;
-    libraryPacks?: LibraryPack[];
-    image?: string;
-    price: number;
-    category?: string;
-}
-
-export interface Category {
-    id: string;
-    title: string;
-    subtitle: string;
-    icon: string;
-    products: Product[];
-    helperText?: string;
-}
-
-export type StorageType = string; // Changed from enum to string to support dynamic types
-
-export interface StorageOption {
-    id: string;
-    name: string;
-    icon: string;
-    description: string;
-    options: {
-        id: string;
-        capacity: number;
-        price: number;
-    }[];
-}
 
 interface BuilderContextType {
     // Data
@@ -64,6 +22,7 @@ interface BuilderContextType {
     selectedProductObjects: Product[];
     selectedLibraryPackObjects: LibraryPack[];
 
+
     // Order State
     customerLocation: string;
     customerDetails: { name: string; email: string; phone: string };
@@ -80,7 +39,6 @@ interface BuilderContextType {
     setCustomerDetails: (details: { name: string; email: string; phone: string }) => void;
     setTotalAmount: (amount: number) => void;
     setCurrentOrder: (order: Order | null) => void;
-    // selectFreeStudio removed
     resetBuilder: () => void;
     getStoragePrice: (type: string | null, capacity: number | null) => number;
 }
@@ -89,6 +47,7 @@ const BuilderContext = createContext<BuilderContextType | undefined>(undefined);
 
 export function BuilderProvider({ children }: { children: ReactNode }) {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [allProducts, setAllProducts] = useState<Product[]>([]); // Flat list for easy calc
     const [storageOptions, setStorageOptions] = useState<StorageOption[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -121,27 +80,51 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
                 const storageData: StorageOption[] = await storageRes.json();
                 const categoriesData: any[] = await categoriesRes.json();
 
+                setAllProducts(productsData);
                 setStorageOptions(storageData);
 
-                // Map categories and filter their products
-                const categoryList: Category[] = categoriesData.map(cat => ({
-                    id: cat.id,
-                    title: cat.name,
-                    subtitle: cat.description || '',
-                    icon: cat.icon || 'Library',
-                    products: productsData.filter(p => p.category === cat.name) // api/products.php returns category name. 
-                    // Wait, api/products.php returns 'category' field as name.
-                    // But precise linking should be via ID if possible.
-                    // Let's rely on name for now as I set it up that way, 
-                    // OR ideally update api/products to return category_id.
-                }));
+                // 1. Create a map of all categories
+                const categoryMap = new Map<string, Category>();
+                categoriesData.forEach(cat => {
+                    categoryMap.set(cat.id, {
+                        id: cat.id,
+                        title: cat.name,
+                        subtitle: cat.description || '',
+                        icon: cat.icon || 'Library',
+                        products: [],
+                        subCategories: []
+                    });
+                });
 
-                // Correction: My api/products.php returned mapped fields. 
-                // It does NOT return category_id in the JSON output, only category name.
-                // However, I can rely on the join name. 
-                // Or I can just map them.
+                // 2. Assign products to categories
+                productsData.forEach(product => {
+                    // Try ID match first
+                    if (product.categoryId && categoryMap.has(product.categoryId)) {
+                        categoryMap.get(product.categoryId)!.products.push(product);
+                    }
+                    // Fallback to name match if ID missing (legacy/safety)
+                    else if (product.category) {
+                        for (const cat of categoryMap.values()) {
+                            if (cat.title === product.category) {
+                                cat.products.push(product);
+                                break;
+                            }
+                        }
+                    }
+                });
 
-                setCategories(categoryList);
+                // 3. Build Tree
+                const rootCategories: Category[] = [];
+                categoriesData.forEach(cat => {
+                    const current = categoryMap.get(cat.id)!;
+                    if (cat.parent_id && categoryMap.has(cat.parent_id)) {
+                        categoryMap.get(cat.parent_id)!.subCategories?.push(current);
+                    } else {
+                        rootCategories.push(current);
+                    }
+                });
+
+                setCategories(rootCategories);
             } catch (err) {
                 console.error('Failed to fetch data:', err);
                 setError('Failed to connect to the server. Please ensure the backend is running.');
@@ -177,29 +160,26 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    // Calculate totals using the flat allProducts list
     const totalStorage = useMemo(() => {
         let total = 0;
-        categories.forEach(category => {
-            category.products.forEach(product => {
-                if (selectedItems.has(product.id)) {
-                    total += product.fileSize;
-                }
-            });
+        allProducts.forEach(product => {
+            if (selectedItems.has(product.id)) {
+                total += product.fileSize;
+            }
         });
         return total;
-    }, [categories, selectedItems]);
+    }, [allProducts, selectedItems]);
 
     const totalPrice = useMemo(() => {
         let total = 0;
-        categories.forEach(category => {
-            category.products.forEach(product => {
-                if (selectedItems.has(product.id)) {
-                    total += product.price || 0;
-                }
-            });
+        allProducts.forEach(product => {
+            if (selectedItems.has(product.id)) {
+                total += product.price || 0;
+            }
         });
         return total;
-    }, [categories, selectedItems]);
+    }, [allProducts, selectedItems]);
 
     const getStoragePrice = (type: string | null, capacity: number | null) => {
         if (!type || !capacity) return 0;
@@ -211,23 +191,12 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
 
     // Derived objects
     const selectedProductObjects = useMemo(() => {
-        const products: Product[] = [];
-        categories.forEach(category => {
-            category.products.forEach(product => {
-                if (selectedItems.has(product.id)) {
-                    products.push(product);
-                }
-            });
-        });
-        return products;
-    }, [categories, selectedItems]);
+        return allProducts.filter(p => selectedItems.has(p.id));
+    }, [allProducts, selectedItems]);
 
     const selectedLibraryPackObjects = useMemo(() => {
-        // Placeholder as library packs not fully implemented in DB yet
         return [];
     }, []);
-
-
 
     const resetBuilder = () => {
         setSelectedItems(new Set());

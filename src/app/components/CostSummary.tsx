@@ -1,6 +1,5 @@
 import { Database, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { StorageType } from '../contexts/BuilderContext';
-import { Category } from './StudioBuilder';
+import { StorageType, Category } from '../../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface CostSummaryProps {

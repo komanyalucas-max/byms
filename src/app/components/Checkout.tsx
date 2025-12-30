@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, Package, HardDrive, MapPin, User, CreditCard, Music, Wallet } from 'lucide-react';
-import { Product, LibraryPack, StorageType } from '../contexts/BuilderContext';
+import { Product, LibraryPack, StorageType } from '../../types';
 import { useSettings } from '../contexts/SettingsContext';
 import { useLanguage } from '../contexts/LanguageContext';
 

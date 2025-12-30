@@ -1,40 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, Wand2, Sliders, Library, ChevronDown, Check } from 'lucide-react';
+import { Music, Wand2, Sliders, Library, ChevronDown, Check, Folder } from 'lucide-react';
 import { CostSummary } from './CostSummary';
 import { StorageSelector } from './StorageSelector';
 import { LanguageCurrencySelector } from './LanguageCurrencySelector';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Product } from '../../types';
 import { useBuilder } from '../contexts/BuilderContext';
-
-// Re-export types for compatibility with other components
-export interface LibraryPack {
-  id: string;
-  name: string;
-  description: string;
-  fileSize: number;
-  image?: string;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  fileSize: number;
-  isFree?: boolean;
-  libraryPacks?: LibraryPack[];
-  image?: string;
-  price?: number;
-}
-
-export interface Category {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  products: Product[];
-  helperText?: string;
-}
 
 // Helper to get React Node icon
 const getIconForCategory = (iconName: string | any) => {
@@ -98,6 +70,50 @@ export function StudioBuilder() {
     const temp = document.createElement('div');
     temp.innerHTML = html;
     return temp.textContent || temp.innerText || '';
+  };
+
+  const renderProduct = (product: Product) => {
+    const isSelected = selectedItems.has(product.id);
+    return (
+      <label
+        key={product.id}
+        className={`block p-3 rounded-xl cursor-pointer transition-all ${isSelected
+          ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-2 border-purple-500/50'
+          : 'bg-slate-800/50 border-2 border-transparent hover:border-slate-600/50'
+          }`}
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 pt-0.5">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => toggleItem(product.id)}
+              className="sr-only"
+            />
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isSelected
+              ? 'bg-gradient-to-br from-purple-500 to-cyan-500 border-transparent'
+              : 'border-slate-600'
+              }`}>
+              {isSelected && <Check className="w-3 h-3 text-white" />}
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h3 className="text-white font-medium text-sm">{product.name}</h3>
+            </div>
+            <p className="text-slate-400 text-xs line-clamp-2">{stripHtml(product.description)}</p>
+          </div>
+
+          <div className={`flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold ${isSelected
+            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+            : 'bg-slate-700/50 text-slate-300'
+            }`}>
+            {formatStorage(product.fileSize)}
+          </div>
+        </div>
+      </label>
+    );
   };
 
   if (isLoading) {
@@ -175,56 +191,41 @@ export function StudioBuilder() {
                       <h2 className="text-white font-bold text-lg">{category.title}</h2>
                       <p className="text-slate-400 text-sm line-clamp-1">{stripHtml(category.subtitle)}</p>
                     </div>
-                    <ChevronDown className={`w - 5 h - 5 text - slate - 400 transition - transform flex - shrink - 0 ${isExpanded ? 'rotate-180' : ''} `} />
+                    <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {/* Products List */}
+                  {/* Products List & Subcategories */}
                   {isExpanded && (
-                    <div className="p-4 pt-0 space-y-2">
-                      {category.products.map((product) => {
-                        const isSelected = selectedItems.has(product.id);
+                    <div className="p-4 pt-0 space-y-4">
+                      {/* Direct Products */}
+                      {category.products.length > 0 && (
+                        <div className="space-y-2">
+                          {category.products.map(renderProduct)}
+                        </div>
+                      )}
 
-                        return (
-                          <label
-                            key={product.id}
-                            className={`block p-3 rounded-xl cursor-pointer transition-all ${isSelected
-                              ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-2 border-purple-500/50'
-                              : 'bg-slate-800/50 border-2 border-transparent hover:border-slate-600/50'
-                              }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className="flex-shrink-0 pt-0.5">
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => toggleItem(product.id)}
-                                  className="sr-only"
-                                />
-                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isSelected
-                                  ? 'bg-gradient-to-br from-purple-500 to-cyan-500 border-transparent'
-                                  : 'border-slate-600'
-                                  }`}>
-                                  {isSelected && <Check className="w-3 h-3 text-white" />}
-                                </div>
-                              </div>
+                      {/* Subcategories */}
+                      {category.subCategories && category.subCategories.map(sub => (
+                        <div key={sub.id} className="pl-2 border-l-2 border-slate-700/50">
+                          <div className="flex items-center gap-2 mb-3 mt-4">
+                            <Folder className="w-4 h-4 text-slate-500" />
+                            <h3 className="text-slate-300 font-medium text-sm uppercase tracking-wider">{sub.title}</h3>
+                          </div>
+                          <div className="space-y-2">
+                            {sub.products.length > 0 ? (
+                              sub.products.map(renderProduct)
+                            ) : (
+                              <div className="text-slate-500 text-xs italic pl-2">No products in this section.</div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
 
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <h3 className="text-white font-medium text-sm">{product.name}</h3>
-                                </div>
-                                <p className="text-slate-400 text-xs line-clamp-2">{stripHtml(product.description)}</p>
-                              </div>
-
-                              <div className={`flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold ${isSelected
-                                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                                : 'bg-slate-700/50 text-slate-300'
-                                }`}>
-                                {formatStorage(product.fileSize)}
-                              </div>
-                            </div>
-                          </label>
-                        );
-                      })}
+                      {category.products.length === 0 && (!category.subCategories || category.subCategories.length === 0) && (
+                        <div className="text-center py-4 text-slate-500">
+                          No products found.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

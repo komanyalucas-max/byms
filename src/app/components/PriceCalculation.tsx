@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Check, Package, HardDrive, ArrowRight, Sparkles, Truck, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useBuilder, Product, LibraryPack, StorageType } from '../contexts/BuilderContext';
+import { Product, LibraryPack, StorageType } from '../../types';
+import { useBuilder } from '../contexts/BuilderContext';
 import { getShippingCost } from './LocationSelection';
 
 interface PriceCalculationProps {

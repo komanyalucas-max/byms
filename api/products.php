@@ -35,6 +35,7 @@ try {
 
         return [
             'id' => $product['id'],
+            'categoryId' => $product['category_id'],
             'name' => $product['name'],
             'description' => $product['description'],
             'category' => $product['category_name'],

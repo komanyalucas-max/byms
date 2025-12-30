@@ -1,39 +1,44 @@
-export interface Product {
+export interface LibraryPack {
     id: string;
-    category_id: string;
     name: string;
     description: string;
-    file_size: number;
-    is_free: boolean;
+    fileSize: number;
+    image?: string;
+}
+
+export interface Product {
+    id: string;
+    categoryId?: string;
+    name: string;
+    description: string;
+    fileSize: number;
+    libraryPacks?: LibraryPack[];
+    image?: string;
     price: number;
-    features: string[];
-    created_at: string;
+    category?: string;
+    isFree?: boolean;
 }
 
 export interface Category {
     id: string;
-    name: string;
-    name_sw?: string;
-    description: string;
-    icon?: string;
-    helper_text?: string;
-    order: number;
-    created_at: string;
+    title: string;
+    subtitle: string;
+    icon: string;
+    products: Product[];
+    helperText?: string;
+    subCategories?: Category[];
 }
 
-export interface OrderItem {
-    product_id: string;
-    product_name: string;
-    price: number;
-}
+export type StorageType = string;
 
-export interface Order {
+export interface StorageOption {
     id: string;
-    user_id: string;
-    customer_name: string;
-    customer_email: string;
-    items: OrderItem[];
-    total_amount: number;
-    status: 'pending' | 'completed' | 'cancelled';
-    created_at: string;
+    name: string;
+    icon: string;
+    description: string;
+    options: {
+        id: string;
+        capacity: number;
+        price: number;
+    }[];
 }

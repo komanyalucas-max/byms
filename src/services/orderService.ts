@@ -1,6 +1,5 @@
 import { kvStore } from './kvStore';
-import { Product, LibraryPack } from '../app/components/StudioBuilder';
-import { StorageType } from '../app/contexts/BuilderContext';
+import { Product, LibraryPack, StorageType } from '../types';
 
 export interface OrderItem {
     type: 'product' | 'library-pack';

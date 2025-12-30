@@ -20,6 +20,14 @@ if ($id) {
     }
 }
 
+// Fetch all categories for parent selection
+try {
+    $parentStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
+    $parentCategories = $parentStmt->fetchAll();
+} catch (PDOException $e) {
+    $parentCategories = [];
+}
+
 // Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';
@@ -27,23 +35,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'] ?? '';
     $display_order = $_POST['display_order'] ?? 0;
     $helper_text = $_POST['helper_text'] ?? '';
+    $parent_id = !empty($_POST['parent_id']) ? $_POST['parent_id'] : null;
 
     if ($name) {
         try {
             if ($id) {
-                // Update
-                $stmt = $pdo->prepare("UPDATE categories SET name = ?, icon = ?, description = ?, display_order = ?, helper_text = ? WHERE id = ?");
-                $stmt->execute([$name, $icon, $description, $display_order, $helper_text, $id]);
+                // Prevent self-parenting
+                if ($parent_id === $id) {
+                    $error = "A category cannot be its own parent.";
+                } else {
+                    // Update
+                    $stmt = $pdo->prepare("UPDATE categories SET name = ?, icon = ?, description = ?, display_order = ?, helper_text = ?, parent_id = ? WHERE id = ?");
+                    $stmt->execute([$name, $icon, $description, $display_order, $helper_text, $parent_id, $id]);
+                }
             } else {
                 // Insert
                 $newId = uniqid('cat_');
-                $stmt = $pdo->prepare("INSERT INTO categories (id, name, icon, description, display_order, helper_text) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$newId, $name, $icon, $description, $display_order, $helper_text]);
+                $stmt = $pdo->prepare("INSERT INTO categories (id, name, icon, description, display_order, helper_text, parent_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$newId, $name, $icon, $description, $display_order, $helper_text, $parent_id]);
             }
 
-            // Redirect
-            echo "<script>window.location.href='categories.php';</script>";
-            exit;
+            if (!isset($error)) {
+                // Redirect
+                echo "<script>window.location.href='categories.php';</script>";
+                exit;
+            }
         } catch (PDOException $e) {
             $error = "Database Error: " . $e->getMessage();
         }
@@ -74,6 +90,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label class="block text-sm font-medium text-slate-300 mb-2">Category Name</label>
             <input type="text" name="name" value="<?= htmlspecialchars($category['name'] ?? '') ?>" required
                 class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+        </div>
+
+        <!-- Parent Category -->
+        <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Parent Category</label>
+            <select name="parent_id" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                <option value="">None (Top Level)</option>
+                <?php foreach ($parentCategories as $pCat): ?>
+                    <?php if ($id && $pCat['id'] === $id) continue; // Skip self 
+                    ?>
+                    <option value="<?= $pCat['id'] ?>" <?= (isset($category['parent_id']) && $category['parent_id'] === $pCat['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($pCat['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
 
         <!-- Icon (Emoji) -->

@@ -6,7 +6,13 @@ $product = null;
 $error = null;
 
 // Fetch categories for dropdown
-$catStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC");
+// Fetch categories for dropdown with hierarchy awareness
+$catStmt = $pdo->query("
+    SELECT c.id, c.name, c.parent_id, p.name as parent_name 
+    FROM categories c 
+    LEFT JOIN categories p ON c.parent_id = p.id 
+    ORDER BY p.name ASC, c.name ASC
+");
 $categories = $catStmt->fetchAll();
 
 // Fetch product if editing
@@ -131,8 +137,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors appearance-none">
                         <option value="">Select Category</option>
                         <?php foreach ($categories as $cat): ?>
+                            <?php
+                            $displayName = $cat['name'];
+                            if ($cat['parent_name']) {
+                                $displayName = $cat['parent_name'] . ' > ' . $cat['name'];
+                            }
+                            ?>
                             <option value="<?= $cat['id'] ?>" <?= ($product['category_id'] ?? '') === $cat['id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($cat['name']) ?>
+                                <?= htmlspecialchars($displayName) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
