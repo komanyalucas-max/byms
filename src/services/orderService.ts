@@ -55,7 +55,7 @@ export const orderService = {
             ]
         };
 
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api'}/orders.php`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -89,7 +89,7 @@ export const orderService = {
         paymentMethod?: Order['paymentMethod'],
         pesapalTrackingId?: string
     ): Promise<void> {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api'}/order_update.php`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/order_update.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

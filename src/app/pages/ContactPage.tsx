@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function ContactPage() {
     const { settings } = useSettings();

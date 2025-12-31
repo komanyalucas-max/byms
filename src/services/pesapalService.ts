@@ -1,7 +1,7 @@
 // Pesapal API 3.0 Integration Service via Backend Proxy
 // Tanzania Merchant Credentials
 
-const PROXY_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api'}/pesapal.php`;
+const PROXY_URL = `${import.meta.env.VITE_API_BASE_URL}/pesapal.php`;
 
 const getHeaders = () => ({
     'Content-Type': 'application/json',

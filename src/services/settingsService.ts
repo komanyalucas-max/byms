@@ -11,7 +11,7 @@ export interface SystemSettings {
     contact_address?: string;
 }
 
-const API_Base = import.meta.env.VITE_API_BASE_URL || 'http://localhost/byms/api';
+const API_Base = import.meta.env.VITE_API_BASE_URL;
 
 export const settingsService = {
     async getSettings(): Promise<SystemSettings> {
