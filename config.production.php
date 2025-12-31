@@ -1,9 +1,9 @@
 <?php
 // Production Database Configuration
 $host = 'localhost'; // Usually 'localhost' on shared hosting, but verify with your host
-$db   = 'your_production_db_name'; // CHANGE THIS
-$user = 'your_production_db_user'; // CHANGE THIS
-$pass = 'your_production_db_pass'; // CHANGE THIS
+$db   = 'soft_software';
+$user = 'soft_music';
+$pass = 'pLQZdk7hHtz2b@RV';
 $charset = 'utf8mb4';
 
 $options = [

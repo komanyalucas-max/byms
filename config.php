@@ -1,8 +1,8 @@
 <?php
 $host = 'localhost';
-$db   = 'studiomusicbuilder';
-$user = 'root';
-$pass = ''; // Default WAMP password
+$db   = 'soft_software';
+$user = 'soft_music';
+$pass = 'pLQZdk7hHtz2b@RV';
 $charset = 'utf8mb4';
 
 $options = [
